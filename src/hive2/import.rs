@@ -112,6 +112,20 @@ impl Import {
             name: format!("cell.homeModules.{}", name),
         }
     }
+
+    pub fn hardware_profiles(name: &str) -> Self {
+        Self {
+            inherit: None,
+            name: format!("cell.hardwareProfiles.{}", name),
+        }
+    }
+
+    pub fn disko_configurations(name: &str) -> Self {
+        Self {
+            inherit: None,
+            name: format!("cell.diskoConfigurations.{}", name),
+        }
+    }
 }
 
 impl FormatInto<Nix> for Import {
