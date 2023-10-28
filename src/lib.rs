@@ -6,14 +6,8 @@ pub mod hive {
     pub use crate::hive2::import::Import;
     pub use crate::hive2::import::Imports;
     pub use crate::hive2::inherit::Inherit;
+    pub use crate::hive2::configurations::Configurations;
 
-    //pub struct Configurations {
-    //    imports: Imports,
-    //}
-    //impl Configurations {
-    //    pub fn new() {
-    //    }
-    //}
     //pub struct Config {
     //    pub key: String,
     //    pub value: nix::Tokens,
