@@ -1,0 +1,7 @@
+[package]
+name = "honey"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+genco = { git = "https://github.com/whs-dot-hk/genco", branch = "test", version = "0.17.6" }
