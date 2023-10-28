@@ -4,73 +4,9 @@ pub mod hive {
     use genco::prelude::*;
 
     pub use crate::hive2::import::Import;
+    pub use crate::hive2::import::Imports;
     pub use crate::hive2::inherit::Inherit;
 
-    pub struct Imports<'a>(pub &'a Vec<Import>);
-    impl FormatInto<Nix> for Imports<'_> {
-        /// ```
-        /// use genco::prelude::*;
-        /// use honey::hive::*;
-        ///
-        /// let vec = vec![Import::disko()];
-        ///
-        /// let imports = Imports(&vec);
-        ///
-        /// let toks = quote! {
-        ///     $imports
-        /// };
-        ///
-        /// assert_eq!(
-        ///     vec![
-        ///         "let",
-        ///         "    inherit (inputs) disko;",
-        ///         "in",
-        ///         "",
-        ///         "disko.nixosModules.disko",
-        ///     ],
-        ///     toks.to_file_vec()?
-        /// );
-        /// # Ok::<_, genco::fmt::Error>(())
-        /// ```
-        fn format_into(self, tokens: &mut Tokens<Nix>) {
-            for import in self.0 {
-                quote_in!(*tokens => $import);
-                tokens.push();
-            }
-        }
-    }
-    impl FormatInto<Nix> for &Imports<'_> {
-        /// ```
-        /// use genco::prelude::*;
-        /// use honey::hive::*;
-        ///
-        /// let vec = vec![Import::disko()];
-        ///
-        /// let imports = Imports(&vec);
-        ///
-        /// let toks = quote! {
-        ///     $(&imports)
-        /// };
-        ///
-        /// assert_eq!(
-        ///     vec![
-        ///         "let",
-        ///         "    inherit (inputs) disko;",
-        ///         "in",
-        ///         "",
-        ///         "disko.nixosModules.disko",
-        ///     ],
-        ///     toks.to_file_vec()?
-        /// );
-        /// # Ok::<_, genco::fmt::Error>(())
-        /// ```
-        fn format_into(self, tokens: &mut Tokens<Nix>) {
-            for import in self.0 {
-                quote_in!(*tokens => $import);
-                tokens.push();
-            }
-        }
-    }
     //pub struct Configurations {
     //    imports: Imports,
     //}

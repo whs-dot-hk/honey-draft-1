@@ -45,13 +45,13 @@ impl Import {
     /// use genco::prelude::*;
     /// use honey::hive::*;
     ///
-    /// let my_home_configurations = Import::new1("cell.homeConfigurations.my_home_configurations");
+    /// let my_home_configurations = Import::new1("cell.homeConfigurations.my-home-configurations");
     ///
     /// let toks = quote!($my_home_configurations);
     ///
     /// assert_eq!(
     ///     vec![
-    ///         "cell.homeConfigurations.my_home_configurations",
+    ///         "cell.homeConfigurations.my-home-configurations",
     ///     ],
     ///     toks.to_file_vec()?
     /// );
@@ -205,5 +205,88 @@ impl FormatInto<Nix> for &Import {
         } else {
             quote_in!(*tokens => $(self.name.clone()))
         }
+    }
+}
+
+pub struct Imports<'a>(pub &'a Vec<Import>);
+
+impl FormatInto<Nix> for Imports<'_> {
+    /// ```
+    /// use genco::prelude::*;
+    /// use honey::hive::*;
+    ///
+    /// let vec = vec![
+    ///     Import::hardware_profiles("my-hardware-profile"),
+    ///     Import::nixos_profiles("my-nix-profile"),
+    /// ];
+    ///
+    /// let imports = Imports(&vec);
+    ///
+    /// let toks = quote! {
+    ///     $imports
+    /// };
+    ///
+    /// assert_eq!(
+    ///     vec![
+    ///         "[",
+    ///         "    cell.hardwareProfiles.my-hardware-profile",
+    ///         "    cell.nixosProfiles.my-nix-profile",
+    ///         "]"
+    ///     ],
+    ///     toks.to_file_vec()?
+    /// );
+    /// # Ok::<_, genco::fmt::Error>(())
+    /// ```
+    fn format_into(self, tokens: &mut Tokens<Nix>) {
+        tokens.append("[");
+        tokens.indent();
+        for import in self.0 {
+            quote_in!(*tokens => $import);
+            tokens.push();
+        }
+        tokens.unindent();
+        tokens.append("]");
+    }
+}
+impl FormatInto<Nix> for &Imports<'_> {
+    /// ```
+    /// use genco::prelude::*;
+    /// use honey::hive::*;
+    ///
+    /// let vec = vec![
+    ///     Import::disko(),
+    ///     Import::disko_configurations("my-disko-configurations")
+    /// ];
+    ///
+    /// let imports = Imports(&vec);
+    ///
+    /// let toks = quote! {
+    ///     $(&imports)
+    /// };
+    ///
+    /// assert_eq!(
+    ///     vec![
+    ///         "let",
+    ///         "    inherit (inputs) disko;",
+    ///         "in",
+    ///         "",
+    ///         "[",
+    ///         "    disko.nixosModules.disko",
+    ///         "    cell.diskoConfigurations.my-disko-configurations",
+    ///         "]",
+    ///     ],
+    ///     toks.to_file_vec()?
+    /// );
+    /// # Ok::<_, genco::fmt::Error>(())
+    /// ```
+    fn format_into(self, tokens: &mut Tokens<Nix>) {
+        tokens.append("[");
+        tokens.indent();
+        for import in self.0 {
+            quote_in!(*tokens => $import);
+            tokens.push();
+        }
+        tokens.unindent();
+        tokens.append("]");
     }
 }
